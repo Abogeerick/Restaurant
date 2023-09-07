@@ -1,47 +1,42 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from models import Base, Restaurant, Customer, Review
+from models import Restaurant,Customer,Review
 
-# Define your SQLite database URL here
-DATABASE_URL = "sqlite:///mydatabase.db"
 
-# Create the database engine
-engine = create_engine(DATABASE_URL)
+if __name__ == '__main__':
+    engine = create_engine('sqlite:///restaurants.db')
+    Session = sessionmaker(bind=engine)
+    session = Session()
+# test review methods
+print("REVIEWS")
+review = session.query(Review).filter_by(id=5).first() # change id to desired review
+print("Customer:")
+print( review.review_customer())
+print("Restaurant:")
+print(review.review_restaurant())
+print("full review:")
+print(review.full_review())
 
-# Create the database tables (if not already created)
-Base.metadata.create_all(engine)
 
-# Create a session
-Session = sessionmaker(bind=engine)
-session = Session()
+# test restaurant methods
+print("RESTAURANTS")
+restaurant = session.query(Restaurant).filter_by(id=9).first() # change id to desired restaurant
+print(" Reviews:")
+print(restaurant.restaurant_reviews())
+print(" Customers making reviews:")
+print(restaurant.restaurant_customers())
+print("formatted reviews:")
+print(restaurant.all_reviews())
+print("Fanciest restaurant:")
+print(Restaurant.fanciest_restaurants())
 
-# Get the first review from the database
-first_review = session.query(Review).first()
-
-if first_review:
-    # Get the associated customer and restaurant for the first review
-    customer = first_review.customer
-    restaurant = first_review.restaurant
-
-    # Print customer and restaurant information
-    if customer and restaurant:
-        print("Customer:", customer.first_name, customer.last_name)
-        print("Restaurant:", restaurant.name)
-    else:
-        print("Customer or Restaurant not found for the first review.")
-else:
-    print("No reviews found in the database.")
-
-# Retrieve and print all customers and their associated reviews
-all_customers = session.query(Customer).all()
-for customer in all_customers:
-    print("Customer:", customer.first_name, customer.last_name)
-    for review in customer.reviews:
-        print("Review Rating:", review.rating)
-
-# Retrieve and print all restaurants and their associated reviews
-all_restaurants = session.query(Restaurant).all()
-for restaurant in all_restaurants:
-    print("Restaurant:", restaurant.name)
-    for review in restaurant.reviews:
-        print("Review Rating:", review.rating)
+# test customer method 
+print("CUSTOMERS")
+customer = session.query(Customer).filter_by(id=5).first() # change id to desired customer
+print ("Customers full name:")
+print(customer.full_name())  
+print("Reviews made:")
+print(customer.customer_reviews())
+print("Reviewed restaurants:")
+print(customer.customer_restaurants())
+print("favorite restaurant:")
